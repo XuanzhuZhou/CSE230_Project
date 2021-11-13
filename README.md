@@ -22,6 +22,6 @@ i) the other player is killed. A player will be killed instantly once he/she get
 ii) have more bullets than the other player when time is up.   
 
 ## Screenshot
-<img src="/screenshot/sample.png" width="700"> 
+<img src="/screenshot/sample.png" width="500"> 
 
 
