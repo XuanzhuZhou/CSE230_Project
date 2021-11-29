@@ -24,16 +24,16 @@ ii) have more bullets than the other player when time is up.
 ## Screenshot
 <img src="/screenshot/sample.png" width="500"> 
 
-### Update on Nov.29
+## Update on Nov.29
 
-## What is the architecture of your application (the key components)?
-
-
-## What challenges (if any) did you have so far and how did you solve them?
+1. What is the architecture of your application (the key components)?
 
 
-## Do you expect to meet your goals until the deadline?
+2. What challenges (if any) did you have so far and how did you solve them?
+
+
+3. Do you expect to meet your goals until the deadline?
 Yes
 
-## If not, how will you modify your goals?
+4. If not, how will you modify your goals?
 We're expected to meet the goals.
