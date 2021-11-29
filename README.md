@@ -24,4 +24,16 @@ ii) have more bullets than the other player when time is up.
 ## Screenshot
 ![Sample](https://github.com/XuanzhuZhou/CSE230_Project/blob/master/screenshot/sample.png)
 
+### Update on Nov.29
 
+## What is the architecture of your application (the key components)?
+
+
+## What challenges (if any) did you have so far and how did you solve them?
+
+
+## Do you expect to meet your goals until the deadline?
+Yes
+
+## If not, how will you modify your goals?
+We're expected to meet the goals.
