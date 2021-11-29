@@ -22,7 +22,7 @@ i) the other player is killed. A player will be killed instantly once he/she get
 ii) have more bullets than the other player when time is up.   
 
 ## Screenshot
-![Sample](https://github.com/XuanzhuZhou/CSE230_Project/blob/master/screenshot/sample.png)
+<img src="/screenshot/sample.png" width="500"> 
 
 ### Update on Nov.29
 
