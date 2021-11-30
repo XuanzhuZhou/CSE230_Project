@@ -2,7 +2,7 @@
 
 ## Team Members(Name, Email, Github_id)
 Xiuqi Chen,,
-Manqing Zheng,,
+Manqing Zheng, maz040@ucsd.edu, manqingZheng
 Xuanzhu Zhou, xuz004@ucsd.edu, XuanzhuZhou
 
 ### Goals
@@ -46,7 +46,9 @@ c) UI
 It includes a playfield(maze) in this game, which visualizes players, blocks and bullets etc. It also accepts keyboard input from two players and pass them to the logic judgement module.  
 
 2. What challenges (if any) did you have so far and how did you solve them?
+For UI application, since we are not familiar with Brick and Graphics library, it is hard at first to implement the maze that we designed. We spent few days to learn tutorials online, gathered further understanding and planned to learn more in the next few days. It's a great experience of self learning and we believe that we will have a good knowledge of utilizing use libraries to accomplish the project well.
 
+We also have problems with moving characters. For each step we are supposed to update data in very short time period to make moving steps smooth enough. It is not easy to applicate that so we changed our original sliding roads into grids, making movement looks natural.
 
 3. Do you expect to meet your goals until the deadline?
 Yes.
