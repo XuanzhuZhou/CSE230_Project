@@ -1,7 +1,7 @@
 # CSE230_Project
 
 ## Team Members(Name, Email, Github_id)
-Xiuqi Chen,,
+Xiuqi Chen, xic048@ucsd.edu, BrannyA
 Manqing Zheng, maz040@ucsd.edu, manqingZheng
 Xuanzhu Zhou, xuz004@ucsd.edu, XuanzhuZhou
 
@@ -50,8 +50,8 @@ For UI application, since we are not familiar with Brick and Graphics library, i
 
 We also have problems with moving characters. For each step we are supposed to update data in very short time period to make moving steps smooth enough. It is not easy to applicate that so we changed our original sliding roads into grids, making movement looks natural.
 
-3. Do you expect to meet your goals until the deadline?
-Yes.
+When we tried to implement the Players class, we realized that we have two players who might move at the same time. A normal implementation is using two threads to represent the players. When they need to use the same resource, for example, pick up the same bullet, they should first acquire the lock of the bullet. However, multi-thread programming in Haskell is totally new for us, and we found it hard to code it out. A alternative solution to this problem is that we don't allow two players to go on the same block at the same time, so that we don't need a lock.  
 
-4. If not, how will you modify your goals?
+3. Do you expect to meet your goals until the deadline? If not, how will you modify your goals?
 We're expected to meet the goals.
+We are trying to figure out multi-thread implementation of two players. Currently we are not sure about how the bricks library handle the inputs, for example, if two players try to move at the same time. If we can not solve this in few days, we are going to modify our game design.
