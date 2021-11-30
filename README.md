@@ -1,4 +1,10 @@
 # CSE230_Project
+
+## Team Members(Name, Email, Github_id)
+Xiuqi Chen,,
+Manqing Zheng,,
+Xuanzhu Zhou, xuz004@ucsd.edu, XuanzhuZhou
+
 ### Goals
 It is a fast paced multiplayer shooting game in the scene of a maze, developed in Haskell. Each participant could control their roles using a keyboard and interact with each other.
 
@@ -24,16 +30,26 @@ ii) have more bullets than the other player when time is up.
 ## Screenshot
 <img src="/screenshot/sample.png" width="500"> 
 
-## Update on Nov.29
+### Update on Nov.29
 
 1. What is the architecture of your application (the key components)?
+We used several haskell libraries to implement the game, including control monad library, concurrent library, brick library and System Random library.  
+There are 3 main components in this game:  
 
+a) Concurrency Control  
+Both players can move and shoot at any time while one action has no effect on the other, which can be implemented by the concurency module.  
+
+b) Logic Judgement  
+There are plenty of logic judgement requirements in this game. For instance, when a player moves, we need to judge whether it has reached the boundry or not. Also, some of the blocks can be crossed while others can not.  
+
+c) UI  
+It includes a playfield(maze) in this game, which visualizes players, blocks and bullets etc. It also accepts keyboard input from two players and pass them to the logic judgement module.  
 
 2. What challenges (if any) did you have so far and how did you solve them?
 
 
 3. Do you expect to meet your goals until the deadline?
-Yes
+Yes.
 
 4. If not, how will you modify your goals?
 We're expected to meet the goals.
