@@ -32,7 +32,7 @@ ii) have more bullets than the other player when time is up.
 
 ### Update on Nov.29
 
-##### What is the architecture of your application (the key components)?
+#### 1 What is the architecture of your application (the key components)?
 We used several haskell libraries to implement the game, including control monad library, concurrent library, brick library and System Random library.      
 There are 3 main components in this game:     
 
@@ -45,13 +45,13 @@ There are plenty of logic judgement requirements in this game. For instance, whe
 c) UI     
 It includes a playfield(maze) in this game, which visualizes players, blocks and bullets etc. It also accepts keyboard input from two players and pass them to the logic judgement module.      
 
-##### What challenges (if any) did you have so far and how did you solve them?
+#### 2 What challenges (if any) did you have so far and how did you solve them?
 For UI application, since we are not familiar with Brick and Graphics library, it is hard at first to implement the maze that we designed. We spent few days to learn tutorials online, gathered further understanding and planned to learn more in the next few days. It's a great experience of self learning and we believe that we will have a good knowledge of utilizing use libraries to accomplish the project well.    
 
 We also have problems with moving characters. For each step we are supposed to update data in very short time period to make moving steps smooth enough. It is not easy to applicate that so we changed our original sliding roads into grids, making movement looks natural.    
 
 When we tried to implement the Players class, we realized that we have two players who might move at the same time. A normal implementation is using two threads to represent the players. When they need to use the same resource, for example, pick up the same bullet, they should first acquire the lock of the bullet. However, multi-thread programming in Haskell is totally new for us, and we found it hard to code it out. A alternative solution to this problem is that we don't allow two players to go on the same block at the same time, so that we don't need a lock.      
 
-##### Do you expect to meet your goals until the deadline? If not, how will you modify your goals?
+#### 3 Do you expect to meet your goals until the deadline? If not, how will you modify your goals?
 We're expected to meet the goals.    
 We are trying to figure out multi-thread implementation of two players. Currently we are not sure about how the bricks library handle the inputs, for example, if two players try to move at the same time. If we can not solve this in few days, we are going to modify our game design.    
