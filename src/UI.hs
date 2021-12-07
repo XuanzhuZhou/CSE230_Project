@@ -65,17 +65,17 @@ main = do
 
 handleEvent :: Game -> BrickEvent Name Tick -> EventM Name (Next Game)
 -- handleEvent g (AppEvent Tick)                       = continue $ step g
--- handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn North g
--- handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn South g
--- handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn East g
--- handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ turn West g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'k') [])) = continue $ turn North g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'j') [])) = continue $ turn South g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'l') [])) = continue $ turn East g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'h') [])) = continue $ turn West g
+handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn1 North g
+handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn1 South g
+handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn1 East g
+handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ turn1 West g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ turn2 North g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ turn2 South g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ turn2 East g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ turn2 West g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
--- handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
+handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
 handleEvent g _                                     = continue g
 
 -- Drawing
