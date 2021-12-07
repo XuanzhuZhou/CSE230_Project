@@ -38,11 +38,11 @@ data Tick = Tick
 
 -- | Named resources
 
-data Cell = Player1 | Player2 | Bullets | Solid | Normal | Grass
+data Cell = Player1 | Player2 | Bullet | Solid | Normal | Grass | Empty
 
 -- App definition
-
-app :: App Game e ()
+type Name = ()
+app :: App Game Tick Name
 app = App { appDraw = drawUI
           , appChooseCursor = neverShowCursor
           , appHandleEvent = handleEvent
@@ -50,7 +50,7 @@ app = App { appDraw = drawUI
           , appAttrMap = const theMap
           }
 
-main :: IO () -- !!!
+main :: IO () -- 程序的入口
 main = do
   chan <- newBChan 10
   forkIO $ forever $ do
@@ -63,81 +63,84 @@ main = do
 
 -- Handling events
 
-handleEvent :: Game -> BrickEvent () Tick -> EventM () (Next Game)
-handleEvent g (AppEvent Tick)                       = continue $ step g
-handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn North g
-handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn South g
-handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn East g
-handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ turn West g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'k') [])) = continue $ turn North g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'j') [])) = continue $ turn South g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'l') [])) = continue $ turn East g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'h') [])) = continue $ turn West g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
+handleEvent :: Game -> BrickEvent Name Tick -> EventM Name (Next Game)
+-- handleEvent g (AppEvent Tick)                       = continue $ step g
+-- handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn North g
+-- handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn South g
+-- handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn East g
+-- handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ turn West g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'k') [])) = continue $ turn North g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'j') [])) = continue $ turn South g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'l') [])) = continue $ turn East g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'h') [])) = continue $ turn West g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
-handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
+-- handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
 handleEvent g _                                     = continue g
 
 -- Drawing
 
-drawUI :: Game -> [Widget ()]
+drawUI :: Game -> [Widget Name]
 drawUI g =
---   [ C.center $ padRight (Pad 2) (drawStats g) <+> drawGrid g ]
-    [ C.center $ padRight (Pad 2) drawGrid g ]
+  [ C.center $ padRight (Pad 2) (drawStats g) <+> drawGrid g ]
 
--- drawStats :: Game -> Widget ()
--- drawStats g = hLimit 11
---   $ vBox [ drawScore (g ^. score)
---          , padTop (Pad 2) $ drawGameOver (g ^. dead)
---          ]
+drawStats :: Game -> Widget Name
+drawStats g = hLimit 15
+  $ vBox [ drawScore (g ^. score1)
+         , drawScore (g ^. score2)
+         , padTop (Pad 2) $ drawGameOver (g ^. dead)
+         ]
 
--- drawScore :: Int -> Widget ()
--- drawScore n = withBorderStyle BS.unicodeBold
---   $ B.borderWithLabel (str "Score")
---   $ C.hCenter
---   $ padAll 1
---   $ str $ show n
+drawScore :: Int -> Widget Name
+drawScore n = withBorderStyle BS.unicodeBold
+  $ B.borderWithLabel (str "Score")
+  $ C.hCenter
+  $ padAll 1
+  $ str $ show n
 
-drawGameOver :: Bool -> Widget ()
+drawGameOver :: Bool -> Widget Name
 drawGameOver dead =
   if dead
      then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER"
      else emptyWidget
 
-drawGrid :: Game -> Widget ()
+drawGrid :: Game -> Widget Name
 drawGrid g = withBorderStyle BS.unicodeBold
-  $ B.borderWithLabel (str "Snake")
+  $ B.borderWithLabel (str "Maze")
   $ vBox rows
   where
     rows         = [hBox $ cellsInRow r | r <- [height-1,height-2..0]]
     cellsInRow y = [drawCoord (V2 x y) | x <- [0..width-1]]
     drawCoord    = drawCell . cellAt
     cellAt c
-      | c `elem` g ^. _player1 = Player1
-      | c == g ^. food      = Food
-      | otherwise           = Empty
+      | c `elem` g ^. player1 = Player1
+      | c `elem` g ^. player2 = Player2
+      | c == g ^. bullet      = Bullet
+      | c `elem` g ^. solid   = Solid
+      | c `elem` g ^. normal  = Normal
+      | c `elem` g ^. grass   = Grass
+      | otherwise             = Empty
 
-drawCell :: Cell -> Widget ()
+drawCell :: Cell -> Widget Name
 drawCell Player1 = withAttr player1Attr cw 
 drawCell Player2 = withAttr player2Attr cw 
-drawCell Bullets = withAttr bulletsAttr cw 
+drawCell Bullet = withAttr bulletAttr cw 
 drawCell Normal  = withAttr normalAttr cw 
 drawCell Grass   = withAttr grassAttr cw 
 drawCell Solid   = withAttr solidAttr cw 
-drawCell Empty = withAttr emptyAttr cw
+drawCell Empty   = withAttr emptyAttr cw
 
-cw :: Widget ()
+cw :: Widget Name
 cw = str "  "
 
 -- color for each item
--- bullets: yellow, normal: blue, grass: green, solid: grey, player1: purple, player2: red, empty: white
 theMap :: AttrMap
 theMap = attrMap V.defAttr
-  [ (bulletsAttr, V.yellow `on` V.yellow)
-  , (normalAttr, V.blue `on` V.blue)
-  , (grassAttr, V.green `on` V.green)
-  , (solidAttr, V.grey `on` V.grey)
-  , (player1Attr, V.purple `on` V.purple)
+  [ (bulletAttr, V.yellow `on` V.yellow)
+  , (normalAttr, V.brightMagenta `on` V.brightMagenta)
+  , (grassAttr, V.brightGreen `on` V.brightGreen)
+  , (solidAttr, V.brightBlack `on` V.brightBlack)
+  , (player1Attr, V.cyan `on` V.cyan)
   , (player2Attr, V.red `on` V.red)
   , (emptyAttr, V.white `on` V.white)
   , (gameOverAttr, fg V.red `V.withStyle` V.bold)
@@ -146,8 +149,8 @@ theMap = attrMap V.defAttr
 gameOverAttr :: AttrName
 gameOverAttr = "gameOver"
 
-bulletsAttr, normalAttr, grassAttr, solidAttr, player1Attr, player2Attr, emptyAttr :: AttrName
-bulletsAttr = "bulletsAttr"
+bulletAttr, normalAttr, grassAttr, solidAttr, player1Attr, player2Attr, emptyAttr :: AttrName
+bulletAttr = "bulletAttr"
 normalAttr  = "normalAttr"
 grassAttr   = "grassAttr"
 solidAttr   = "solidAttr"
