@@ -57,8 +57,8 @@ makeLenses ''Game
 -- Constants
 
 height, width :: Int
-height = 20
-width = 20
+height = 40
+width = 40
 
 -- -- Functions
 
@@ -95,9 +95,9 @@ nextBullet :: State Game ()
 nextBullet = do
   (f :| fs) <- use bullets
   bullets .= fs
-  elem f <$> use player1 >>= \case
+  use player1 >>= (\case
     True -> nextBullet
-    False -> bullet .= f
+    False -> bullet .= f) . elem f
 
 -- -- | Move snake along in a marquee fashion
 -- move :: Game -> Game
@@ -127,12 +127,24 @@ nextBullet = do
 --             | otherwise = c
 
 -- | Initialize a paused game with random location
+
+-- define some random blocks for initialization
+
+-- randShape1 x y = [V2 x y, V2 x y+1, V2 x y+2, V2 (x+1) y, V2 (x+2) y]
+-- randShape2 x y = [V2 x y, V2 (x+1) y, V2 (x+2) y]
+-- randShape3 x y = [V2 x y, V2 x y+1, V2 x y+2, V2 x y+3]
+-- randShape4 x y = [V2 x y, V2 (x+1) y]
+-- randShape5 x y = [V2 x y, V2 (x+1) y, V2 (x+2) y, V2 (x+2) y-1, V2 (x+2) y-2, V2 (x+2) y-3]
+-- randShape6 x y = [V2 x y]
+
+-- randSolid :: [Coord]
+-- randSolid x y = randShape1 x y ++ randShape2 x y ++ randShape3 x y ++ randShape4 x y ++ randShape5 x y ++ randShape6 x y
 initSolid :: [Coord]
-initSolid = map (V2 0) [0..height] ++ map (V2 (width-1)) [0..height]
+initSolid = map (V2 0) [0..height] ++ map (V2 (width-1)) [0..height] ++ map (`V2` 0) [0..height] ++ map (`V2` (width-1)) [0..height]
 initNormal :: [Coord]
-initNormal = [(V2 2 1), (V2 2 2), (V2 2 3)]
+initNormal = [V2 10 10, V2 10 11, V2 10 12, V2 37 38, V2 38 38, V2 39 38]
 initGrass :: [Coord]
-initGrass = [(V2 3 1), (V2 3 2), (V2 3 3)]
+initGrass = [V2 20 21, V2 20 22, V2 20 23, V2 27 30, V2 28 30, V2 29 30]
 
 initGame :: IO Game
 initGame = do
@@ -140,20 +152,11 @@ initGame = do
     fromList . randomRs (V2 0 0, V2 (width - 1) (height - 1)) <$> newStdGen
   let xm = width `div` 2
       ym = height `div` 2
-      g  = Game
-        -- { _snake  = (S.singleton (V2 xm ym))
-        -- , _food   = f
-        -- , _foods  = fs
-        -- , _score  = 0
-        -- , _dir    = North
-        -- , _dead   = False
-        -- , _paused = True
-        -- , _locked = False
-        -- }
-        { _dead    = False                         -- ^ game over flag
+      g  = Game{
+          _dead    = False                         -- ^ game over flag
         , _paused  = False                         -- ^ paused flag
-        , _player1 = (S.singleton (V2 xm ym))                     -- ^ coordinate of player 1
-        , _player2 = (S.singleton (V2 (xm+10) (ym+10)))              -- ^ coordinate of player 2 
+        , _player1 = S.singleton (V2 xm ym)                     -- ^ coordinate of player 1
+        , _player2 = S.singleton (V2 (xm+10) (ym+10))              -- ^ coordinate of player 2 
         , _score1  =  0                            -- ^ score of player 1
         , _score2  =  0                            -- ^ score of player 2  
         , _bullet   = f                            -- ^ coordinate of current bullet
@@ -163,7 +166,6 @@ initGame = do
         , _grass   = initGrass                     -- ^ list of grass blocks
         }
   return $ execState nextBullet g
-  -- return $ execState nextBullet g
 
 fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
