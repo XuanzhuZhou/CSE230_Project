@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
 -- module Maze
 --   ( initGame
 --   , step
@@ -12,8 +13,11 @@
 --   ) where
 module Maze(
   initGame
+  , turn1
+  , turn2
   , Game(..)
-  , dead, player1, player2, score1, score2, bullet, solid, normal, grass
+  , Direction(..)
+  , dead, paused, player1, player2, score1, score2, bullet, solid, normal, grass
   , height, width
 ) where
 import Control.Applicative ((<|>))
@@ -51,6 +55,13 @@ type Coord = V2 Int
 
 data Stream a = a :| Stream a
   deriving (Eq,Show)
+
+data Direction
+  = North
+  | South
+  | East
+  | West
+  deriving (Eq, Show)
 
 makeLenses ''Game
 
@@ -113,18 +124,34 @@ nextBullet = do
 --   | d == West  = a & _x %~ (\x -> (x - 1) `mod` width)
 -- nextHead _ = error "Snakes can't be empty!"
 
--- -- | Turn game direction (only turns orthogonally)
--- --
--- -- Implicitly unpauses yet locks game
--- turn :: Direction -> Game -> Game
--- turn d g = if g ^. locked
---   then g
---   else g & dir %~ turnDir d & paused .~ False & locked .~ True
+-- | Turn game direction (only turns orthogonally)
+--
+-- Implicitly unpauses yet locks game
 
--- turnDir :: Direction -> Direction -> Direction
--- turnDir n c | c `elem` [North, South] && n `elem` [East, West] = n
---             | c `elem` [East, West] && n `elem` [North, South] = n
---             | otherwise = c
+-- Try to move player1 around; if moving not possible, leave player1 where it is
+turn1 :: Direction -> Game -> Game
+turn1 d g@Game { _player1 = (s :|> _) } = g & player1 .~ (nextPos d g <| s)
+turn1 _ _                               = error "Player1 can't be empty!"
+
+nextPos :: Direction -> Game -> Coord
+nextPos d g@Game { _player1 = (s :<| _) }
+  | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
+  | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
+  | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
+  | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
+nextPos _ _      = error "Player1 can't be empty!"
+
+turn2 :: Direction -> Game -> Game
+turn2 d g@Game { _player2 = (s :|> _) } = g & player2 .~ (nextPos2 d g <| s)
+turn2 _ _                               = error "Player2 can't be empty!"
+
+nextPos2 :: Direction -> Game -> Coord
+nextPos2 d g@Game { _player2 = (s :<| _) }
+  | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
+  | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
+  | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
+  | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
+nextPos2 _ _      = error "Player2 can't be empty!"
 
 -- | Initialize a paused game with random location
 
