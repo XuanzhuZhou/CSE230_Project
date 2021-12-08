@@ -14,6 +14,7 @@
 module Maze(
   initGame
   , moves
+  , p1_kill
   -- , turn1
   -- , turn2
   , Game(..)
@@ -218,7 +219,7 @@ initSolid = map (V2 0) [0..height] ++ map (V2 (width-1)) [0..height] ++ map (`V2
 initNormal :: [Coord]
 initNormal = [V2 10 10, V2 10 11, V2 10 12, V2 11 10, V2 11 11, V2 11 12]
 initGrass :: [Coord]
-initGrass = [V2 20 21, V2 20 22, V2 20 23, V2 27 30, V2 28 30, V2 29 30]
+initGrass = [V2 20 21, V2 20 22, V2 20 23, V2 27 30, V2 28 30, V2 29 30, V2 1 2, V2 1 3]
 
 initGame :: IO Game
 initGame = do
@@ -248,3 +249,47 @@ initState = do
 
 fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
+
+
+
+  -- if blockExists g North then g & normal %~ (\list -> (delete  (V2 x (y+1)) list)) else g
+  -- if blockExists g South then g & normal %~ (\list -> (delete  (V2 x (y-1)) list)) else g
+  -- if blockExists g West  then g & normal %~ (\list -> (delete  (V2 (x-1) y) list)) else g
+  -- if blockExists g East  then g & normal %~ (\list -> (delete  (V2 (x+1) y) list)) else g
+p1_kill :: Game -> Game
+p1_kill g = do
+  let (V2 x y) = g ^. player1
+  let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
+                    [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
+  foldl delNormal g positions
+
+delNormal :: Game -> [Int] -> Game
+delNormal g pos = do
+  let x = head pos
+  let y = last pos
+  if normalExists g x y then 
+    g & normal %~ (\list -> (delete  (V2 x y) list)) 
+  else 
+    g
+
+normalExists :: Game -> Int -> Int -> Bool
+normalExists g x y = do
+  (V2 x y) `elem` (g ^. normal)
+
+
+-- delete a element from list
+delete :: Eq a => a -> [a] -> [a]
+delete deleted list = [x | x <- list, x /= deleted]
+
+-- use bullet to kill blocks around
+-- killBlocks :: Game -> Int -> Game
+-- killBlocks g player = do
+--   let (V2 x y) = if player == 1 then g ^. player1 else g ^. player2
+--   g & normal %~ (\list -> (delete  (V2 (x+1) y) list))
+--   g & normal %~ (\list -> (delete  (V2 (x-1) y) list))
+--   g & normal %~ (\list -> (delete  (V2 x (y+1)) list))
+--   g & normal %~ (\list -> (delete  (V2 x (y-1)) list))
+
+-- return True if player1 can kill player2, else False
+-- killRival :: Game -> Game
+  -- let (V2 rival_x rival_y) = g ^. Player1 if player == 2 else g ^.Player2

@@ -8,7 +8,7 @@ import Data.Maybe (fromMaybe)
 
 import Maze
 
-import Brick
+import Brick 
   ( App(..), AttrMap, BrickEvent(..), EventM, Next, Widget
   , customMain, neverShowCursor
   , continue, halt
@@ -69,6 +69,7 @@ handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ moves North g
 handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ moves South g
 handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ moves East g
 handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ moves West g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'l') [])) = continue $ p1_kill g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ turn2 North g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ turn2 South g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ turn2 East g
