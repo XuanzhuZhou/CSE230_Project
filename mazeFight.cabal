@@ -33,4 +33,6 @@ test-suite tests
   hs-source-dirs:    tests
   ghc-options:       -W -threaded
   main-is:           Test.hs
-  build-depends:     base >=4.9, process
+  build-depends:     base >=4.9
+                    , process
+                    , QuickCheck
