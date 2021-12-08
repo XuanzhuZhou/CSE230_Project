@@ -20,6 +20,7 @@ executable mazeFight
                      , random
                      , transformers
                      , vty
+                     , mtl
   hs-source-dirs:      src
   other-modules:       Maze,
                        UI

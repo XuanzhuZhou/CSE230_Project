@@ -38,7 +38,7 @@ data Tick = Tick
 
 -- | Named resources
 
-data Cell = Player1 | Player2 | Bullet | Solid | Normal | Grass | Empty
+data Cell = Player1 | Player2 | Bullets | Solid | Normal | Grass | Empty
 
 -- App definition
 type Name = ()
@@ -65,16 +65,16 @@ main = do
 
 handleEvent :: Game -> BrickEvent Name Tick -> EventM Name (Next Game)
 -- handleEvent g (AppEvent Tick)                       = continue $ step g
-handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ moves North g
-handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ moves South g
-handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ moves East g
-handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ moves West g
 handleEvent g (VtyEvent (V.EvKey (V.KChar '.') [])) = continue $ p1_kill g
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'c') [])) = continue $ p2_kill g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ turn2 North g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ turn2 South g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ turn2 East g
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ turn2 West g
+handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ moves 1 North g
+handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ moves 1 South g
+handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ moves 1 East g
+handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ moves 1 West g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ moves 2 North g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ moves 2 South g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ moves 2 East g
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ moves 2 West g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
 handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
@@ -117,19 +117,19 @@ drawGrid g = withBorderStyle BS.unicodeBold
     cellAt c
       | c == (g ^. player1) = Player1
       | c == (g ^. player2) = Player2
-      | c == g ^. bullet      = Bullet
+      | c `elem` g ^. bullets   = Bullets
       | c `elem` g ^. solid   = Solid
       | c `elem` g ^. normal  = Normal
       | c `elem` g ^. grass   = Grass
       | otherwise             = Empty
 
 drawCell :: Cell -> Widget Name
-drawCell Player1 = withAttr player1Attr cw 
-drawCell Player2 = withAttr player2Attr cw 
-drawCell Bullet = withAttr bulletAttr cw 
-drawCell Normal  = withAttr normalAttr cw 
-drawCell Grass   = withAttr grassAttr cw 
-drawCell Solid   = withAttr solidAttr cw 
+drawCell Player1 = withAttr player1Attr cw
+drawCell Player2 = withAttr player2Attr cw
+drawCell Bullets = withAttr bulletAttr cw
+drawCell Normal  = withAttr normalAttr cw
+drawCell Grass   = withAttr grassAttr cw
+drawCell Solid   = withAttr solidAttr cw
 drawCell Empty   = withAttr emptyAttr cw
 
 cw :: Widget Name
