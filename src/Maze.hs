@@ -15,6 +15,7 @@ module Maze(
   initGame
   , moves
   , p1_kill
+  , p2_kill
   -- , turn1
   -- , turn2
   , Game(..)
@@ -261,12 +262,20 @@ p1_kill g = do
   -- foldl delNormal g positions
   if (gameIsOver g 1) then g & dead %~ (\x -> True) else foldl delNormal g positions
 
+p2_kill :: Game -> Game
+p2_kill g = do
+  let (V2 x y) = g ^. player2
+  let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
+                    [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
+  -- foldl delNormal g positions
+  if (gameIsOver g 2) then g & dead %~ (\x -> True) else foldl delNormal g positions
+
 ---------- check game over after each kill ----------
 -- check if game is over 
 gameIsOver :: Game -> Int -> Bool
 gameIsOver g player = do
   let (V2 x y) = if player == 1 then g ^. player1 else g ^. player2
-  let (V2 rival_x rival_y) = if player == 1 then g ^. player2 else g ^. player2
+  let (V2 rival_x rival_y) = if player == 1 then g ^. player2 else g ^. player1
   let positions  = [V2 x (y+1), V2 x (y-1), V2 (x+1) y, V2 (x-1) y,
                     V2 (x+1) (y+1), V2 (x+1) (y-1), V2 (x-1) (y-1), V2 (x-1) (y+1)]
   (V2 rival_x rival_y) `elem` positions
