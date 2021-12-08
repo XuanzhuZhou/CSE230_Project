@@ -65,14 +65,14 @@ main = do
 
 handleEvent :: Game -> BrickEvent Name Tick -> EventM Name (Next Game)
 -- handleEvent g (AppEvent Tick)                       = continue $ step g
-handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn1 North g
-handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn1 South g
-handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn1 East g
-handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ turn1 West g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ turn2 North g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ turn2 South g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ turn2 East g
-handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ turn2 West g
+handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ moves North g
+handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ moves South g
+handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ moves East g
+handleEvent g (VtyEvent (V.EvKey V.KLeft []))       = continue $ moves West g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ turn2 North g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ turn2 South g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ turn2 East g
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ turn2 West g
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
 handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
@@ -113,8 +113,8 @@ drawGrid g = withBorderStyle BS.unicodeBold
     cellsInRow y = [drawCoord (V2 x y) | x <- [0..width-1]]
     drawCoord    = drawCell . cellAt
     cellAt c
-      | c `elem` g ^. player1 = Player1
-      | c `elem` g ^. player2 = Player2
+      | c == (g ^. player1) = Player1
+      | c == (g ^. player2) = Player2
       | c == g ^. bullet      = Bullet
       | c `elem` g ^. solid   = Solid
       | c `elem` g ^. normal  = Normal
