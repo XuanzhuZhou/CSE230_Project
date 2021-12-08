@@ -250,19 +250,29 @@ initState = do
 fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
 
-
-
-  -- if blockExists g North then g & normal %~ (\list -> (delete  (V2 x (y+1)) list)) else g
-  -- if blockExists g South then g & normal %~ (\list -> (delete  (V2 x (y-1)) list)) else g
-  -- if blockExists g West  then g & normal %~ (\list -> (delete  (V2 (x-1) y) list)) else g
-  -- if blockExists g East  then g & normal %~ (\list -> (delete  (V2 (x+1) y) list)) else g
+------------------------------------------------------------
+----------------- kill (using bullets) ---------------------
+-- if rival around, game over, else delet normal blocks
 p1_kill :: Game -> Game
 p1_kill g = do
   let (V2 x y) = g ^. player1
   let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
                     [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
-  foldl delNormal g positions
+  -- foldl delNormal g positions
+  if (gameIsOver g 1) then g & dead %~ (\x -> True) else foldl delNormal g positions
 
+---------- check game over after each kill ----------
+-- check if game is over 
+gameIsOver :: Game -> Int -> Bool
+gameIsOver g player = do
+  let (V2 x y) = if player == 1 then g ^. player1 else g ^. player2
+  let (V2 rival_x rival_y) = if player == 1 then g ^. player2 else g ^. player2
+  let positions  = [V2 x (y+1), V2 x (y-1), V2 (x+1) y, V2 (x-1) y,
+                    V2 (x+1) (y+1), V2 (x+1) (y-1), V2 (x-1) (y-1), V2 (x-1) (y+1)]
+  (V2 rival_x rival_y) `elem` positions
+
+---------- kill normal blocks around ------------
+-- delete a normal block (x, y) if it exists
 delNormal :: Game -> [Int] -> Game
 delNormal g pos = do
   let x = head pos
@@ -272,24 +282,14 @@ delNormal g pos = do
   else 
     g
 
+-- check if a normal block (x, y) exist
 normalExists :: Game -> Int -> Int -> Bool
 normalExists g x y = do
   (V2 x y) `elem` (g ^. normal)
-
 
 -- delete a element from list
 delete :: Eq a => a -> [a] -> [a]
 delete deleted list = [x | x <- list, x /= deleted]
 
--- use bullet to kill blocks around
--- killBlocks :: Game -> Int -> Game
--- killBlocks g player = do
---   let (V2 x y) = if player == 1 then g ^. player1 else g ^. player2
---   g & normal %~ (\list -> (delete  (V2 (x+1) y) list))
---   g & normal %~ (\list -> (delete  (V2 (x-1) y) list))
---   g & normal %~ (\list -> (delete  (V2 x (y+1)) list))
---   g & normal %~ (\list -> (delete  (V2 x (y-1)) list))
-
--- return True if player1 can kill player2, else False
--- killRival :: Game -> Game
-  -- let (V2 rival_x rival_y) = g ^. Player1 if player == 2 else g ^.Player2
+-------------------- "kill" part ends -----------------------
+-------------------------------------------------------------
