@@ -2,9 +2,7 @@
 module UI where
 
 import Control.Monad (forever, void)
-import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent (threadDelay, forkIO)
-import Data.Maybe (fromMaybe)
 
 import Maze
 
@@ -12,8 +10,8 @@ import Brick
   ( App(..), AttrMap, BrickEvent(..), EventM, Next, Widget
   , customMain, neverShowCursor
   , continue, halt
-  , hLimit, vLimit, vBox, hBox
-  , padRight, padLeft, padTop, padAll, Padding(..)
+  , hLimit, vBox, hBox
+  , padRight, padTop, padAll, Padding(..)
   , withBorderStyle
   , str
   , attrMap, withAttr, emptyWidget, AttrName, on, fg
@@ -25,8 +23,6 @@ import qualified Brick.Widgets.Border.Style as BS
 import qualified Brick.Widgets.Center as C
 import Control.Lens ((^.))
 import qualified Graphics.Vty as V
-import Data.Sequence (Seq)
-import qualified Data.Sequence as S
 import Linear.V2 (V2(..))
 
 -- Types

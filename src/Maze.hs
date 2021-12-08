@@ -14,18 +14,10 @@ module Maze(
   , dead, paused, player1, player2, score1, score2, bullets, solid, normal, grass
   , height, width
 ) where
-import Control.Applicative ((<|>))
-import Control.Monad (guard)
-import Data.Maybe (fromMaybe)
 
 import Control.Lens hiding ((<|), (|>), (:>), (:<))
-import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.State
-import Control.Monad.Extra (orM)
-import Data.Sequence (Seq(..), (<|))
-import qualified Data.Sequence as S
 import Linear.V2 (V2(..), _x, _y)
-import System.Random (Random(..), newStdGen)
 
 -- Types
 
