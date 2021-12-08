@@ -64,7 +64,7 @@ main = do
 -- Handling events
 
 handleEvent :: Game -> BrickEvent Name Tick -> EventM Name (Next Game)
--- handleEvent g (AppEvent Tick)                       = continue $ step g
+handleEvent g (AppEvent Tick)                       = continue $ step g
 handleEvent g (VtyEvent (V.EvKey V.KUp []))         = continue $ turn1 North g
 handleEvent g (VtyEvent (V.EvKey V.KDown []))       = continue $ turn1 South g
 handleEvent g (VtyEvent (V.EvKey V.KRight []))      = continue $ turn1 East g
