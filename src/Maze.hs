@@ -4,9 +4,9 @@
 {-# OPTIONS_GHC -Wno-unused-matches #-}
 module Maze(
   initGame
-  , turn1
-  , turn2
-  , step
+  , moves
+  -- , turn1
+  -- , turn2
   , Game(..)
   , Direction(..)
   , dead, paused, player1, player2, score1, score2, bullet, solid, normal, grass
@@ -30,8 +30,8 @@ import System.Random (Random(..), newStdGen)
 data Game = Game
   { _dead    :: Bool         -- ^ game over flag
   , _paused  :: Bool         -- ^ paused flag
-  , _player1 :: Player    -- ^ coordinate of player 1
-  , _player2 :: Player    -- ^ coordinate of player 2 
+  , _player1 :: Coord    -- ^ coordinate of player 1
+  , _player2 :: Coord    -- ^ coordinate of player 2 
   , _score1  :: Int          -- ^ score of player 1
   , _score2  :: Int          -- ^ score of player 2
   , _bullet  :: Coord        -- ^ list of bullets locations
@@ -65,61 +65,103 @@ width = 40
 
 -- Functions
 -- | Step forward in time
-step :: Game -> Game
-step s = flip execState s . runMaybeT $ do
+-- step :: Game -> Game
+-- step s = flip execState s . runMaybeT $ do
 
-  -- Make sure the game isn't paused or over
-  MaybeT $ guard . not <$> orM [use paused, use dead]
+--   -- Make sure the game isn't paused or over
+--   MaybeT $ guard . not <$> orM [use paused, use dead]
 
-  -- win (one player wins)
-  win
+--   -- win (one player wins)
+--   win
 
-win :: MaybeT (StateT Game Identity) ()
-win = error "not implemented"
+-- win :: MaybeT (StateT Game Identity) ()
+-- win = error "not implemented"
 
--- | players can get bullet if positions overlap
-getBullet :: MaybeT (State Game) ()
+-- -- | players can get bullet if positions overlap
+-- getBullet :: MaybeT (State Game) ()
 -- getBullet = do
 --   MaybeT . fmap guard $ (==) <$> (nextBullet <$> get) <*> use bullet
 --   MaybeT . fmap Just $ do
 --     modifying score1 (+ 10)
 --     get >>= \g -> modifying player1 (nextBullet g <|)
 --     nextBullet
-getBullet = error "not implemented"
 
--- | Set a valid next bullet coordinate
-nextBullet :: State Game ()
-nextBullet = do
-  (f :| fs) <- use bullets
-  bullets .= fs
-  use player1 >>= (\case -- all the list TBD !!!
-    True -> nextBullet
-    False -> bullet .= f) . elem f
+-- -- | Set a valid next bullet coordinate
+-- nextBullet :: State Game ()
+-- nextBullet = do
+--   (f :| fs) <- use bullets
+--   bullets .= fs
+--   use player1 >>= (\case -- all the list TBD !!!
+--     True -> nextBullet
+--     False -> bullet .= f) . elem f
 
--- | Move player1 & player2 around; if moving not possible, leave them where they are
-turn1 :: Direction -> Game -> Game
-turn1 d g@Game { _player1 = (s :|> _) } = g & player1 .~ nextPos1 d g <| s
-turn1 _ _                               = error "Player1 can't be empty!"
+-- -- | Move player1 & player2 around; if moving not possible, leave them where they are
+-- turn1 :: Direction -> Game -> Game
+-- turn1 d g@Game { _player1 = (s :|> _) } = g & player1 .~ nextPos1 d g <| s
+-- turn1 _ _                               = error "Player1 can't be empty!"
 
-nextPos1 :: Direction -> Game -> Coord
-nextPos1 d g@Game { _player1 = (s :<| _) }
-  | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
-  | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
-  | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
-  | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
-nextPos1 _ _      = error "Player1 can't be empty!"
+-- nextPos1 :: Direction -> Game -> Coord
+-- nextPos1 d g@Game { _player1 = (s :<| _) }
+--   | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
+--   | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
+--   | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
+--   | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
+-- nextPos1 _ _      = error "Player1 can't be empty!"
 
-turn2 :: Direction -> Game -> Game
-turn2 d g@Game { _player2 = (s :|> _) } = g & player2 .~ nextPos2 d g <| s
-turn2 _ _                               = error "Player2 can't be empty!"
+-- turn2 :: Direction -> Game -> Game
+-- turn2 d g@Game { _player2 = (s :|> _) } = g & player2 .~ nextPos2 d g <| s
+-- turn2 _ _                               = error "Player2 can't be empty!"
 
-nextPos2 :: Direction -> Game -> Coord
-nextPos2 d g@Game { _player2 = (s :<| _) }
-  | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
-  | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
-  | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
-  | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
-nextPos2 _ _      = error "Player2 can't be empty!"
+-- nextPos2 :: Direction -> Game -> Coord
+-- nextPos2 d g@Game { _player2 = (s :<| _) }
+--   | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
+--   | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
+--   | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
+--   | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
+-- nextPos2 _ _      = error "Player2 can't be empty!"
+
+moves  :: Direction -> Game -> Game
+moves North g =
+  if blockExists g North then
+    g
+  else
+    g & player1 %~ (\(V2 a b) -> V2 a ((b+1) `mod` height))
+
+moves South g = do
+  if blockExists g South then
+    g
+  else
+    g & player1 %~ (\(V2 a b) -> V2 a ((b-1) `mod` height))
+
+moves West g = do
+  if blockExists g West then
+    g
+  else
+    g & player1 %~ (\(V2 a b) -> V2 ((a-1) `mod` width) b)
+
+moves East g = do
+  if blockExists g East then
+    g
+  else
+    g & player1 %~ (\(V2 a b) -> V2 ((a+1) `mod` width) b)
+
+
+blockExists :: Game -> Direction -> Bool
+blockExists g North = do
+  let (V2 xm ym) = g ^. player1
+  (V2 xm ym+1) `elem` (g ^. normal)
+
+blockExists g South = do
+  let (V2 xm ym) = g ^. player1
+  (V2 xm ym-1) `elem` (g ^. normal)
+
+blockExists g East = do
+  let (V2 xm ym) = g ^. player1
+  V2 (xm+1) ym `elem` (g ^. normal)
+
+blockExists g West = do
+  let (V2 xm ym) = g ^. player1
+  V2 (xm-1) ym `elem` (g ^. normal)
 
 -- | Define some random blocks for initialization
 -- randShape1 x y = [V2 x y, V2 x y+1, V2 x y+2, V2 (x+1) y, V2 (x+2) y]
@@ -133,7 +175,7 @@ nextPos2 _ _      = error "Player2 can't be empty!"
 initSolid :: [Coord]
 initSolid = map (V2 0) [0..height] ++ map (V2 (width-1)) [0..height] ++ map (`V2` 0) [0..height] ++ map (`V2` (width-1)) [0..height]
 initNormal :: [Coord]
-initNormal = [V2 10 10, V2 10 11, V2 10 12, V2 37 38, V2 38 38, V2 39 38]
+initNormal = [V2 10 10, V2 10 11, V2 10 12, V2 11 10, V2 11 11, V2 11 12]
 initGrass :: [Coord]
 initGrass = [V2 20 21, V2 20 22, V2 20 23, V2 27 30, V2 28 30, V2 29 30]
 
@@ -141,13 +183,13 @@ initGame :: IO Game
 initGame = do
   (f :| fs) <-
     fromList . randomRs (V2 0 0, V2 (width - 1) (height - 1)) <$> newStdGen
-  let xm = width `div` 2
-      ym = height `div` 2
+  let xm = width `div` 5
+      ym = height `div` 5
       g  = Game{
           _dead    = False                         -- ^ game over flag
         , _paused  = False                         -- ^ paused flag
-        , _player1 = S.singleton (V2 xm ym)                     -- ^ coordinate of player 1
-        , _player2 = S.singleton (V2 (xm+10) (ym+10))              -- ^ coordinate of player 2 
+        , _player1 = V2 xm ym                     -- ^ coordinate of player 1
+        , _player2 = V2 (xm+10) (ym+10)              -- ^ coordinate of player 2 
         , _score1  =  0                            -- ^ score of player 1
         , _score2  =  0                            -- ^ score of player 2  
         , _bullet   = f                            -- ^ coordinate of current bullet
@@ -156,7 +198,12 @@ initGame = do
         , _normal  = initNormal                    -- ^ list of normal blocks
         , _grass   = initGrass                     -- ^ list of grass blocks
         }
-  return $ execState nextBullet g
+  return $ execState initState g
+
+initState :: State Game ()
+initState = do
+  s <- get
+  put s
 
 fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
