@@ -2,11 +2,12 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 module Maze(
   initGame
-  , moves
   -- , turn1
-  -- , turn2
+  , turn1
+  , turn2
   , Game(..)
   , Direction(..)
   , dead, paused, player1, player2, score1, score2, bullet, solid, normal, grass
@@ -95,72 +96,93 @@ width = 40
 --     True -> nextBullet
 --     False -> bullet .= f) . elem f
 
--- -- | Move player1 & player2 around; if moving not possible, leave them where they are
--- turn1 :: Direction -> Game -> Game
--- turn1 d g@Game { _player1 = (s :|> _) } = g & player1 .~ nextPos1 d g <| s
--- turn1 _ _                               = error "Player1 can't be empty!"
-
--- nextPos1 :: Direction -> Game -> Coord
--- nextPos1 d g@Game { _player1 = (s :<| _) }
---   | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
---   | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
---   | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
---   | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
--- nextPos1 _ _      = error "Player1 can't be empty!"
-
--- turn2 :: Direction -> Game -> Game
--- turn2 d g@Game { _player2 = (s :|> _) } = g & player2 .~ nextPos2 d g <| s
--- turn2 _ _                               = error "Player2 can't be empty!"
-
--- nextPos2 :: Direction -> Game -> Coord
--- nextPos2 d g@Game { _player2 = (s :<| _) }
---   | d == North = s & _y %~ (\y -> (y + 1) `mod` height)
---   | d == South = s & _y %~ (\y -> (y - 1) `mod` height)
---   | d == East  = s & _x %~ (\x -> (x + 1) `mod` width)
---   | d == West  = s & _x %~ (\x -> (x - 1) `mod` width)
--- nextPos2 _ _      = error "Player2 can't be empty!"
-
-moves  :: Direction -> Game -> Game
-moves North g =
-  if blockExists g North then
+-- | Move player1 & player2 around; if moving not possible, leave them where they are
+turn1  :: Direction -> Game -> Game
+turn1 North g =
+  if blockExists1 g North then
     g
   else
     g & player1 %~ (\(V2 a b) -> V2 a ((b+1) `mod` height))
 
-moves South g = do
-  if blockExists g South then
+turn1 South g = do
+  if blockExists1 g South then
     g
   else
     g & player1 %~ (\(V2 a b) -> V2 a ((b-1) `mod` height))
 
-moves West g = do
-  if blockExists g West then
+turn1 West g = do
+  if blockExists1 g West then
     g
   else
     g & player1 %~ (\(V2 a b) -> V2 ((a-1) `mod` width) b)
 
-moves East g = do
-  if blockExists g East then
+turn1 East g = do
+  if blockExists1 g East then
     g
   else
     g & player1 %~ (\(V2 a b) -> V2 ((a+1) `mod` width) b)
 
+turn1 _ _   = error "Player1 can't be empty!"
 
-blockExists :: Game -> Direction -> Bool
-blockExists g North = do
+blockExists1 :: Game -> Direction -> Bool
+blockExists1 g North = do
   let (V2 xm ym) = g ^. player1
   (V2 xm ym+1) `elem` (g ^. normal)
 
-blockExists g South = do
+blockExists1 g South = do
   let (V2 xm ym) = g ^. player1
   (V2 xm ym-1) `elem` (g ^. normal)
 
-blockExists g East = do
+blockExists1 g East = do
   let (V2 xm ym) = g ^. player1
   V2 (xm+1) ym `elem` (g ^. normal)
 
-blockExists g West = do
+blockExists1 g West = do
   let (V2 xm ym) = g ^. player1
+  V2 (xm-1) ym `elem` (g ^. normal)
+
+turn2  :: Direction -> Game -> Game
+turn2 North g =
+  if blockExists2 g North then
+    g
+  else
+    g & player2 %~ (\(V2 a b) -> V2 a ((b+1) `mod` height))
+
+turn2 South g = do
+  if blockExists2 g South then
+    g
+  else
+    g & player2 %~ (\(V2 a b) -> V2 a ((b-1) `mod` height))
+
+turn2 West g = do
+  if blockExists2 g West then
+    g
+  else
+    g & player2 %~ (\(V2 a b) -> V2 ((a-1) `mod` width) b)
+  
+turn2 East g = do
+  if blockExists2 g East then
+    g
+  else
+    g & player2 %~ (\(V2 a b) -> V2 ((a+1) `mod` width) b)
+
+turn2 _ _   = error "Player1 can't be empty!"
+
+blockExists2 :: Game -> Direction -> Bool
+blockExists2 g North = do
+  let (V2 xm ym) = g ^. player2
+  (V2 xm ym+1) `elem` (g ^. normal)
+
+blockExists2 g South = do
+  let (V2 xm ym) = g ^. player2
+  (V2 xm ym-1) `elem` (g ^. normal)
+
+blockExists2 g East = do
+  let (V2 xm ym) = g ^. player2
+  V2 (xm+1) ym `elem` (g ^. normal)
+
+blockExists2 g West = do
+  let (V2 xm ym) = g ^. player2
   V2 (xm-1) ym `elem` (g ^. normal)
 
 -- | Define some random blocks for initialization
