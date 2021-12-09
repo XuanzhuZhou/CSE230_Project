@@ -123,10 +123,23 @@ drawGameOver g =
 drawBoard :: Game -> Widget Name
 drawBoard g = if g ^. rules == 0 then drawGrid g 
   else hLimit 82
-  $ vBox [ C.hCenter $ str "\n\n\n\n\n Welcome to Maze FIght \n\n\n"
+  $ vBox [ withAttr gameOverAttr $ C.hCenter $ str "\n\n\nWelcome to Maze Fight \n\n\n"
          , C.hCenter $ str "PRESS B TO START THE GAME \n\n\n"
-         , C.hCenter $ str "------ RULES ------\n\n"
-         , C.hCenter $ str "text\nhahahahahahahahahahahahahahaha\n1111111111111111111111111"
+         , C.hCenter $ str "----------- RULES -----------\n\n"
+         , C.hCenter $ str "BLOCKS\n"
+         , C.hCenter $ str "Solid blocks: can’t go through, can't be destroyed \n"
+         , C.hCenter $ str "Normal block: can’t go through,  can  be destroyed \n"
+         , C.hCenter $ str "Normal block:  can  go through, can't be destroyed \n"
+         , C.hCenter $ str "\nKILL\n"
+         , C.hCenter $ str "Touch a bomb in the maze to pick it up\n"
+         , C.hCenter $ str "Use a bomb to kill your rival or destroy normal blocks\n"
+         , C.hCenter $ str "Explosion range: 8 blocks aroud you\n"
+         , C.hCenter $ str "\nSCORE\n"
+         , C.hCenter $ str "Pick up a bomb : +10  \n"
+         , C.hCenter $ str "Kill your rival: +1000\n"
+         , C.hCenter $ str "\nGame ends when a player is killed or no bomb exist \n"
+         , C.hCenter $ str "The player who has higher bullet counter score wins\n"
+
          ]
 
 drawGrid :: Game -> Widget Name
@@ -169,6 +182,7 @@ theMap = attrMap V.defAttr
   , (player2Attr, V.red `on` V.red)
   , (emptyAttr, V.white `on` V.white)
   , (gameOverAttr, fg V.red `V.withStyle` V.bold)
+  -- , (blueAttr, fg V.cyan `V.withStyle` V.bold)
   ]
 
 gameOverAttr :: AttrName
