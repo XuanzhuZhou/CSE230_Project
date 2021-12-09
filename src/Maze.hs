@@ -76,6 +76,8 @@ moves player dirc g = do
   let curr_bullet = V2 new_x new_y
   if blockExists x y g dirc then
     g
+  else if solid_blockExists x y g dirc then
+    g
   else if bulletExists x y g dirc then
     if player == 1 then
       addScore player g & player1 %~ (\(V2 a b) -> V2 new_x new_y) & bullets %~ delete curr_bullet & bu_cnt1 %~ (\x -> x+1)
@@ -93,6 +95,13 @@ blockExists xm ym g d = case d of
   South -> V2 (xm+1) ym-1 `elem` g ^. normal
   West ->  V2 (xm-1) ym `elem` g ^. normal
   East ->  V2 (xm+1) ym `elem` g ^. normal
+
+solid_blockExists :: Int -> Int -> Game -> Direction -> Bool
+solid_blockExists xm ym g d = case d of
+  North -> V2 (xm-1) ym+1 `elem` g ^. solid
+  South -> V2 (xm+1) ym-1 `elem` g ^. solid
+  West ->  V2 (xm-1) ym `elem` g ^. solid
+  East ->  V2 (xm+1) ym `elem` g ^. solid
 
 addScore  :: Int -> Game -> Game
 addScore num g =
@@ -162,7 +171,11 @@ p1_kill g = do
   let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
                     [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
   -- foldl delNormal g positions
-  if (gameIsOver g 1) then g & dead %~ (\x -> True) & score1 %~ (\x -> x+1000) else foldl delNormal g positions
+  if g ^. bu_cnt1 == 0 then g
+  else
+    if (gameIsOver g 1) then 
+      g & dead %~ (\x -> True) & score1 %~ (\x -> x+1000) & bu_cnt1 %~ (\x -> x-1)
+    else foldl delNormal g positions & bu_cnt1 %~ (\x -> x-1)
 
 p2_kill :: Game -> Game
 p2_kill g = do
@@ -170,7 +183,11 @@ p2_kill g = do
   let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
                     [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
   -- foldl delNormal g positions
-  if (gameIsOver g 2) then g & dead %~ (\x -> True) & score2 %~ (\x -> x+1000) else foldl delNormal g positions
+  if g ^. bu_cnt2 == 0 then g
+  else
+    if (gameIsOver g 2) then 
+      g & dead %~ (\x -> True) & score2 %~ (\x -> x+1000) & bu_cnt2 %~ (\x -> x-1)
+    else foldl delNormal g positions & bu_cnt2 %~ (\x -> x-1)
 
 ---------- check game over after each kill ----------
 -- check if game is over 
@@ -181,6 +198,7 @@ gameIsOver g player = do
   let positions  = [V2 x (y+1), V2 x (y-1), V2 (x+1) y, V2 (x-1) y,
                     V2 (x+1) (y+1), V2 (x+1) (y-1), V2 (x-1) (y-1), V2 (x-1) (y+1)]
   (V2 rival_x rival_y) `elem` positions
+  
 
 ---------- kill normal blocks around ------------
 -- delete a normal block (x, y) if it exists
