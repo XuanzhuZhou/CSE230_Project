@@ -123,7 +123,7 @@ drawGameOver g =
 drawBoard :: Game -> Widget Name
 drawBoard g = if g ^. rules == 0 then drawGrid g 
   else hLimit 82
-  $ vBox [ C.hCenter $ str "\n\n\n\n\n Welcome to Maze FIght \n\n\n"
+  $ vBox [ C.hCenter $ str "\n\n\n\n\n Welcome to Maze Fight \n\n\n"
          , C.hCenter $ str "PRESS B TO START THE GAME \n\n\n"
          , C.hCenter $ str "------ RULES ------\n\n"
          , C.hCenter $ str "text\nhahahahahahahahahahahahahahaha\n1111111111111111111111111"
@@ -147,11 +147,11 @@ drawGrid g = withBorderStyle BS.unicodeBold
       | otherwise             = Empty
 
 drawCell :: Cell -> Widget Name
-drawCell Player1 = withAttr player1Attr cw
-drawCell Player2 = withAttr player2Attr cw
-drawCell Bullets = withAttr bulletAttr cw
+drawCell Player1 = withAttr player1Attr $ str "👧"
+drawCell Player2 = withAttr player2Attr $ str "👦"
+drawCell Bullets = withAttr bulletAttr $ str "💥"
 drawCell Normal  = withAttr normalAttr cw
-drawCell Grass   = withAttr grassAttr cw
+drawCell Grass   = withAttr grassAttr $ str "🌲" 
 drawCell Solid   = withAttr solidAttr cw
 drawCell Empty   = withAttr emptyAttr cw
 
