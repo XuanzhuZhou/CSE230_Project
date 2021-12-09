@@ -133,7 +133,11 @@ p1_kill g = do
   else
     if (gameIsOver g 1) then 
       g & dead %~ (\x -> True) & score1 %~ (\x -> x+1000) & bu_cnt1 %~ (\x -> x-1)
-    else foldl delNormal g positions & bu_cnt1 %~ (\x -> x-1)
+    else 
+      if g ^. bu_cnt1 == 1 && g ^. bu_cnt2 == 0 && length (g ^. bullets) == 0 then
+        foldl delNormal g positions & bu_cnt1 %~ (\x -> x-1) & dead %~ (\x -> True)
+      else
+        foldl delNormal g positions & bu_cnt1 %~ (\x -> x-1)
 
 p2_kill :: Game -> Game
 p2_kill g = do
@@ -145,7 +149,11 @@ p2_kill g = do
   else
     if (gameIsOver g 2) then 
       g & dead %~ (\x -> True) & score2 %~ (\x -> x+1000) & bu_cnt2 %~ (\x -> x-1)
-    else foldl delNormal g positions & bu_cnt2 %~ (\x -> x-1)
+    else 
+      if g ^. bu_cnt2 == 1 && g ^. bu_cnt1 == 0 && length (g ^. bullets) == 0 then
+        foldl delNormal g positions & bu_cnt2 %~ (\x -> x-1) & dead %~ (\x -> True)
+      else
+        foldl delNormal g positions & bu_cnt2 %~ (\x -> x-1)
 
 ---------- check game over after each kill ----------
 -- check if game is over 

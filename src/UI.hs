@@ -80,19 +80,19 @@ handleEvent g _                                     = continue g
 
 drawUI :: Game -> [Widget Name]
 drawUI g =
-  [ C.center $ padRight (Pad 2) (drawStats1 g) <+> drawGrid g <+> padLeft (Pad 2) (drawStats2 g)]
+  [ C.center $ padRight (Pad 2) (drawStats2 g) <+> drawGrid g <+> padLeft (Pad 2) (drawStats1 g)]
 
 drawStats1 :: Game -> Widget Name
-drawStats1 g = hLimit 15
-  $ vBox [ C.hCenter $ str "\n PLAYER 1 \n \n"
+drawStats1 g = hLimit 16
+  $ vBox [ C.hCenter $ str "\n   PLAYER 1 \nUse ↑↓←→ to move\nUse . to kill\n\n"
          , drawScore (g ^. score1) " Score "
          , drawScore (g ^. bu_cnt1) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
          ]
 
 drawStats2 :: Game -> Widget Name
-drawStats2 g = hLimit 15
-  $ vBox [ C.hCenter $ str "\n PLAYER 2 \n \n"
+drawStats2 g = hLimit 16
+  $ vBox [ C.hCenter $ str "\n   PLAYER 2 \nUse WASD to move\nUse C to kill\n\n"
          , drawScore (g ^. score2) " Socre "
          , drawScore (g ^. bu_cnt2) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
