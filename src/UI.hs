@@ -11,7 +11,7 @@ import Brick
   , customMain, neverShowCursor
   , continue, halt
   , hLimit, vBox, hBox
-  , padRight, padTop, padAll, Padding(..)
+  , padRight, padLeft, padTop, padAll, Padding(..)
   , withBorderStyle
   , str
   , attrMap, withAttr, emptyWidget, AttrName, on, fg
@@ -52,7 +52,7 @@ main = do
   forkIO $ forever $ do
     writeBChan chan Tick
     threadDelay 100000 -- decides how fast your game moves
-  g <- initGame
+  g <- initGame2
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app g
@@ -80,27 +80,38 @@ handleEvent g _                                     = continue g
 
 drawUI :: Game -> [Widget Name]
 drawUI g =
-  [ C.center $ padRight (Pad 2) (drawStats g) <+> drawGrid g ]
+  [ C.center $ padRight (Pad 2) (drawStats1 g) <+> drawGrid g <+> padLeft (Pad 2) (drawStats2 g)]
 
-drawStats :: Game -> Widget Name
-drawStats g = hLimit 15
-  $ vBox [ drawScore (g ^. score1)
-         , drawScore (g ^. score2)
-         , padTop (Pad 2) $ drawGameOver (g ^. dead)
+drawStats1 :: Game -> Widget Name
+drawStats1 g = hLimit 15
+  $ vBox [ C.hCenter $ str "\n PLAYER 1 \n \n"
+         , drawScore (g ^. score1) " Score "
+         , drawScore (g ^. bu_cnt1) " Bullet "
+         , padTop (Pad 2) $ drawGameOver g
          ]
 
-drawScore :: Int -> Widget Name
-drawScore n = withBorderStyle BS.unicodeBold
-  $ B.borderWithLabel (str "Score")
+drawStats2 :: Game -> Widget Name
+drawStats2 g = hLimit 15
+  $ vBox [ C.hCenter $ str "\n PLAYER 2 \n \n"
+         , drawScore (g ^. score2) " Socre "
+         , drawScore (g ^. bu_cnt2) " Bullet "
+         , padTop (Pad 2) $ drawGameOver g
+         ]
+
+drawScore :: Int -> String -> Widget Name
+drawScore n s = withBorderStyle BS.unicodeBold
+  $ B.borderWithLabel (str s)
   $ C.hCenter
   $ padAll 1
   $ str $ show n
 
-drawGameOver :: Bool -> Widget Name
-drawGameOver dead =
-  if dead
-     then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER"
-     else emptyWidget
+drawGameOver :: Game -> Widget Name
+drawGameOver g =
+  if g ^. dead then
+    if g ^. score1 == g ^. score2 then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\n Tie"
+    else if g ^. score1 > g ^. score2 then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 1"
+    else withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 2"
+  else emptyWidget
 
 drawGrid :: Game -> Widget Name
 drawGrid g = withBorderStyle BS.unicodeBold
@@ -135,10 +146,10 @@ cw = str "  "
 theMap :: AttrMap
 theMap = attrMap V.defAttr
   [ (bulletAttr, V.yellow `on` V.yellow)
-  , (normalAttr, V.brightMagenta `on` V.brightMagenta)
-  , (grassAttr, V.brightGreen `on` V.brightGreen)
+  , (normalAttr, V.cyan `on` V.cyan)
+  , (grassAttr, V.green `on` V.green)
   , (solidAttr, V.brightBlack `on` V.brightBlack)
-  , (player1Attr, V.cyan `on` V.cyan)
+  , (player1Attr, V.brightMagenta `on` V.brightMagenta)
   , (player2Attr, V.red `on` V.red)
   , (emptyAttr, V.white `on` V.white)
   , (gameOverAttr, fg V.red `V.withStyle` V.bold)
