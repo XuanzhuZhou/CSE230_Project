@@ -80,20 +80,27 @@ handleEvent g _                                     = continue g
 
 drawUI :: Game -> [Widget Name]
 drawUI g =
-  [ C.center $ padRight (Pad 2) (drawStats g) <+> drawGrid g ]
+  [ C.center $ padRight (Pad 2) (drawStats1 g) <+> drawGrid g <+> (drawStats2 g)]
 
-drawStats :: Game -> Widget Name
-drawStats g = hLimit 15
-  $ vBox [ drawScore (g ^. score1)
-         , drawScore (g ^. score2)
-         , drawScore (g ^. bu_cnt1)
-         , drawScore (g ^. bu_cnt2)
+drawStats1 :: Game -> Widget Name
+drawStats1 g = hLimit 15
+  $ vBox [ C.hCenter $ str "\n PLAYER 1 \n \n"
+         , drawScore (g ^. score1) " Score "
+         , drawScore (g ^. bu_cnt1) " Bullet "
          , padTop (Pad 2) $ drawGameOver (g ^. dead)
          ]
 
-drawScore :: Int -> Widget Name
-drawScore n = withBorderStyle BS.unicodeBold
-  $ B.borderWithLabel (str "Score")
+drawStats2 :: Game -> Widget Name
+drawStats2 g = hLimit 15
+  $ vBox [ C.hCenter $ str "\n PLAYER 2 \n \n"
+         , drawScore (g ^. score2) " Socre "
+         , drawScore (g ^. bu_cnt2) " Bullet "
+         , padTop (Pad 2) $ drawGameOver (g ^. dead)
+         ]
+
+drawScore :: Int -> String -> Widget Name
+drawScore n s = withBorderStyle BS.unicodeBold
+  $ B.borderWithLabel (str s)
   $ C.hCenter
   $ padAll 1
   $ str $ show n
