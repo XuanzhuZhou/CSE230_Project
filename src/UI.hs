@@ -11,7 +11,7 @@ import Brick
   , customMain, neverShowCursor
   , continue, halt
   , hLimit, vBox, hBox
-  , padRight, padTop, padAll, Padding(..)
+  , padRight, padLeft, padTop, padAll, Padding(..)
   , withBorderStyle
   , str
   , attrMap, withAttr, emptyWidget, AttrName, on, fg
@@ -80,14 +80,14 @@ handleEvent g _                                     = continue g
 
 drawUI :: Game -> [Widget Name]
 drawUI g =
-  [ C.center $ padRight (Pad 2) (drawStats1 g) <+> drawGrid g <+> (drawStats2 g)]
+  [ C.center $ padRight (Pad 2) (drawStats1 g) <+> drawGrid g <+> padLeft (Pad 2) (drawStats2 g)]
 
 drawStats1 :: Game -> Widget Name
 drawStats1 g = hLimit 15
   $ vBox [ C.hCenter $ str "\n PLAYER 1 \n \n"
          , drawScore (g ^. score1) " Score "
          , drawScore (g ^. bu_cnt1) " Bullet "
-         , padTop (Pad 2) $ drawGameOver (g ^. dead)
+         , padTop (Pad 2) $ drawGameOver g
          ]
 
 drawStats2 :: Game -> Widget Name
@@ -95,7 +95,7 @@ drawStats2 g = hLimit 15
   $ vBox [ C.hCenter $ str "\n PLAYER 2 \n \n"
          , drawScore (g ^. score2) " Socre "
          , drawScore (g ^. bu_cnt2) " Bullet "
-         , padTop (Pad 2) $ drawGameOver (g ^. dead)
+         , padTop (Pad 2) $ drawGameOver g
          ]
 
 drawScore :: Int -> String -> Widget Name
@@ -105,11 +105,13 @@ drawScore n s = withBorderStyle BS.unicodeBold
   $ padAll 1
   $ str $ show n
 
-drawGameOver :: Bool -> Widget Name
-drawGameOver dead =
-  if dead
-     then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER"
-     else emptyWidget
+drawGameOver :: Game -> Widget Name
+drawGameOver g =
+  if g ^. dead then
+    if g ^. score1 == g ^. score2 then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\n Tie"
+    else if g ^. score1 > g ^. score2 then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 1"
+    else withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 2"
+  else emptyWidget
 
 drawGrid :: Game -> Widget Name
 drawGrid g = withBorderStyle BS.unicodeBold
