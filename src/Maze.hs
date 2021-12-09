@@ -11,9 +11,10 @@ module Maze(
   , p1_kill
   , p2_kill
   , restart
+  , seeRules
   , Game(..)
   , Direction(..)
-  , dead, paused, player1, player2, score1, score2, bullets, bu_cnt1, bu_cnt2, solid, normal, grass
+  , dead, paused, player1, player2, score1, score2, bullets, bu_cnt1, bu_cnt2, rules, solid, normal, grass
   , height, width
 ) where
 
@@ -33,6 +34,7 @@ data Game = Game
   , _bullets :: [Coord] -- ^ list of bullets locations
   , _bu_cnt1 :: Int          -- ^ bullets count of player 1
   , _bu_cnt2 :: Int          -- ^ bullets count of player 2
+  , _rules   :: Int  
   , _solid   :: [Coord]      -- ^ list of solid blocks
   , _normal  :: [Coord]      -- ^ list of normal blocks
   , _grass   :: [Coord]      -- ^ list of grass blocks
@@ -211,6 +213,7 @@ initGame1 = do
         , _score2  =  0                            -- ^ score of player 2  
         , _bu_cnt1 = 0
         , _bu_cnt2 = 0
+        , _rules   = 1
         , _bullets = initBullets1                   -- ^ list of bullets locations
         , _solid   = initSolid1                     -- ^ list of solid blocks
         , _normal  = initNormal1                    -- ^ list of normal blocks
@@ -242,6 +245,7 @@ initGame2 = do
         , _score2  =  0                            -- ^ score of player 2  
         , _bu_cnt1 = 0
         , _bu_cnt2 = 0
+        , _rules   = 1
         , _bullets = initBullets2                   -- ^ list of bullets locations
         , _solid   = initSolid2                     -- ^ list of solid blocks
         , _normal  = initNormal2                    -- ^ list of normal blocks
@@ -267,6 +271,7 @@ restart g mapid = do
         , _score2  =  0                            -- ^ score of player 2  
         , _bu_cnt1 = 0
         , _bu_cnt2 = 0
+        , _rules   = 1
         , _bullets = initBullets2                   -- ^ list of bullets locations
         , _solid   = initSolid2                     -- ^ list of solid blocks
         , _normal  = initNormal2                    -- ^ list of normal blocks
@@ -281,9 +286,14 @@ restart g mapid = do
         , _score2  =  0                            -- ^ score of player 2  
         , _bu_cnt1 = 0
         , _bu_cnt2 = 0
+        , _rules   = 1
         , _bullets = initBullets1                   -- ^ list of bullets locations
         , _solid   = initSolid1                     -- ^ list of solid blocks
         , _normal  = initNormal1                    -- ^ list of normal blocks
         , _grass   = initGrass1                     -- ^ list of grass blocks
         }
   if mapid == 1 then g1 else g2
+
+
+seeRules :: Game -> Int -> Game
+seeRules g n = g & rules %~ (\x -> n)
