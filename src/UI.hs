@@ -86,6 +86,8 @@ drawStats :: Game -> Widget Name
 drawStats g = hLimit 15
   $ vBox [ drawScore (g ^. score1)
          , drawScore (g ^. score2)
+         , drawScore (g ^. bu_cnt1)
+         , drawScore (g ^. bu_cnt2)
          , padTop (Pad 2) $ drawGameOver (g ^. dead)
          ]
 

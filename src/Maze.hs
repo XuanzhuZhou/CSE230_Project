@@ -11,7 +11,7 @@ module Maze(
   , p2_kill
   , Game(..)
   , Direction(..)
-  , dead, paused, player1, player2, score1, score2, bullets, solid, normal, grass
+  , dead, paused, player1, player2, score1, score2, bullets, bu_cnt1, bu_cnt2, solid, normal, grass
   , height, width
 ) where
 
@@ -29,6 +29,8 @@ data Game = Game
   , _score1  :: Int          -- ^ score of player 1
   , _score2  :: Int          -- ^ score of player 2
   , _bullets :: [Coord] -- ^ list of bullets locations
+  , _bu_cnt1 :: Int          -- ^ bullets count of player 1
+  , _bu_cnt2 :: Int          -- ^ bullets count of player 2
   , _solid   :: [Coord]      -- ^ list of solid blocks
   , _normal  :: [Coord]      -- ^ list of normal blocks
   , _grass   :: [Coord]      -- ^ list of grass blocks
@@ -76,9 +78,9 @@ moves player dirc g = do
     g
   else if bulletExists x y g dirc then
     if player == 1 then
-      addScore player g & player1 %~ (\(V2 a b) -> V2 new_x new_y) & bullets %~ delete curr_bullet
+      addScore player g & player1 %~ (\(V2 a b) -> V2 new_x new_y) & bullets %~ delete curr_bullet & bu_cnt1 %~ (\x -> x+1)
     else
-      addScore player g & player2 %~ (\(V2 a b) -> V2 new_x new_y) & bullets %~ delete curr_bullet
+      addScore player g & player2 %~ (\(V2 a b) -> V2 new_x new_y) & bullets %~ delete curr_bullet & bu_cnt2 %~ (\x -> x+1)
   else
     if player == 1 then
       g & player1 %~ (\(V2 a b) -> V2 new_x new_y)
@@ -138,6 +140,8 @@ initGame = do
         , _score1  =  0                            -- ^ score of player 1
         , _score2  =  0                            -- ^ score of player 2  
         , _bullets = initBullets                   -- ^ list of bullets locations
+        , _bu_cnt1 = 0
+        , _bu_cnt2 = 0
         , _solid   = initSolid                     -- ^ list of solid blocks
         , _normal  = initNormal                    -- ^ list of normal blocks
         , _grass   = initGrass                     -- ^ list of grass blocks
@@ -158,7 +162,7 @@ p1_kill g = do
   let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
                     [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
   -- foldl delNormal g positions
-  if (gameIsOver g 1) then g & dead %~ (\x -> True) else foldl delNormal g positions
+  if (gameIsOver g 1) then g & dead %~ (\x -> True) & score1 %~ (\x -> x+1000) else foldl delNormal g positions
 
 p2_kill :: Game -> Game
 p2_kill g = do
@@ -166,7 +170,7 @@ p2_kill g = do
   let positions  = [[x, y+1], [x, y-1], [x+1, y], [x-1, y],
                     [x+1, y+1], [x+1, y-1], [x-1, y-1], [x-1, y+1]]
   -- foldl delNormal g positions
-  if (gameIsOver g 2) then g & dead %~ (\x -> True) else foldl delNormal g positions
+  if (gameIsOver g 2) then g & dead %~ (\x -> True) & score2 %~ (\x -> x+1000) else foldl delNormal g positions
 
 ---------- check game over after each kill ----------
 -- check if game is over 
