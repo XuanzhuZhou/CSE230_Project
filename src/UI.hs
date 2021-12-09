@@ -73,8 +73,8 @@ handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ moves 2 East g
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ moves 2 West g
 handleEvent g (VtyEvent (V.EvKey (V.KChar '1') [])) = continue $ restart g 1
 handleEvent g (VtyEvent (V.EvKey (V.KChar '2') [])) = continue $ restart g 2
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'R') [])) = continue $ rules g 1
--- handleEvent g (VtyEvent (V.EvKey (V.KChar 'B') [])) = continue $ rules g 2
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = continue $ seeRules g 1
+handleEvent g (VtyEvent (V.EvKey (V.KChar 'b') [])) = continue $ seeRules g 0
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
 handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
@@ -85,7 +85,7 @@ handleEvent g _                                     = continue g
 
 drawUI :: Game -> [Widget Name]
 drawUI g =
-  [ C.center $ padRight (Pad 2) (drawStats2 g) <+> drawGrid g <+> padLeft (Pad 2) (drawStats1 g)]
+  [ C.center $ padRight (Pad 2) (drawStats2 g) <+> drawBoard g <+> padLeft (Pad 2) (drawStats1 g)]
 
 drawStats1 :: Game -> Widget Name
 drawStats1 g = hLimit 16
@@ -102,7 +102,7 @@ drawStats2 g = hLimit 16
          , drawScore (g ^. score2) " Socre "
          , drawScore (g ^. bu_cnt2) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
-         , C.hCenter $ str "\n\n\n\n\n\n\n RULES"
+         , C.hCenter $ str "\n\n\n\n\n\n\nPRESS R\nTO SEE THE RULES\n\nPRESS B\nBACK TO GAME"
          ]
 
 drawScore :: Int -> String -> Widget Name
@@ -119,6 +119,15 @@ drawGameOver g =
     else if g ^. score1 > g ^. score2 then withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 1"
     else withAttr gameOverAttr $ C.hCenter $ str "GAME OVER\n\nWinner:\nPLAYER 2"
   else emptyWidget
+
+drawBoard :: Game -> Widget Name
+drawBoard g = if g ^. rules == 0 then drawGrid g 
+  else hLimit 82
+  $ vBox [ C.hCenter $ str "\n\n\n\n\n Welcome to Maze FIght \n\n\n"
+         , C.hCenter $ str "PRESS B TO START THE GAME \n\n\n"
+         , C.hCenter $ str "------ RULES ------\n\n"
+         , C.hCenter $ str "text\nhahahahahahahahahahahahahahaha\n1111111111111111111111111"
+         ]
 
 drawGrid :: Game -> Widget Name
 drawGrid g = withBorderStyle BS.unicodeBold
