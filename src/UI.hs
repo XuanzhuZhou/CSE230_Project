@@ -71,10 +71,15 @@ handleEvent g (VtyEvent (V.EvKey (V.KChar 'w') [])) = continue $ moves 2 North g
 handleEvent g (VtyEvent (V.EvKey (V.KChar 's') [])) = continue $ moves 2 South g
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'd') [])) = continue $ moves 2 East g
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'a') [])) = continue $ moves 2 West g
+handleEvent g (VtyEvent (V.EvKey (V.KChar '1') [])) = continue $ restart g 1
+handleEvent g (VtyEvent (V.EvKey (V.KChar '2') [])) = continue $ restart g 2
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'R') [])) = continue $ rules g 1
+-- handleEvent g (VtyEvent (V.EvKey (V.KChar 'B') [])) = continue $ rules g 2
 -- handleEvent g (VtyEvent (V.EvKey (V.KChar 'r') [])) = liftIO (initGame) >>= continue
 handleEvent g (VtyEvent (V.EvKey (V.KChar 'q') [])) = halt g
 handleEvent g (VtyEvent (V.EvKey V.KEsc []))        = halt g
 handleEvent g _                                     = continue g
+
 
 -- Drawing
 
@@ -88,6 +93,7 @@ drawStats1 g = hLimit 16
          , drawScore (g ^. score1) " Score "
          , drawScore (g ^. bu_cnt1) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
+         , C.hCenter $ str "\n\n\n\n\n\n\nPRESS 1 OR 2\nTO CHANGE A MAZE\nAND RESTART GAME\n"
          ]
 
 drawStats2 :: Game -> Widget Name
@@ -96,6 +102,7 @@ drawStats2 g = hLimit 16
          , drawScore (g ^. score2) " Socre "
          , drawScore (g ^. bu_cnt2) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
+         , C.hCenter $ str "\n\n\n\n\n\n\n RULES"
          ]
 
 drawScore :: Int -> String -> Widget Name

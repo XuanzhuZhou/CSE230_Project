@@ -10,6 +10,7 @@ module Maze(
   , moves
   , p1_kill
   , p2_kill
+  , restart
   , Game(..)
   , Direction(..)
   , dead, paused, player1, player2, score1, score2, bullets, bu_cnt1, bu_cnt2, solid, normal, grass
@@ -252,3 +253,37 @@ initState :: State Game ()
 initState = do
   s <- get
   put s
+
+restart :: Game -> Int -> Game
+restart g mapid = do 
+  let xm = width `div` 5
+      ym = height `div` 5
+      g2  = Game{
+          _dead    = False                         -- ^ game over flag
+        , _paused  = False                         -- ^ paused flag
+        , _player1 = V2 xm ym                     -- ^ coordinate of player 1
+        , _player2 = V2 (xm+10) (ym+10)              -- ^ coordinate of player 2 
+        , _score1  =  0                            -- ^ score of player 1
+        , _score2  =  0                            -- ^ score of player 2  
+        , _bu_cnt1 = 0
+        , _bu_cnt2 = 0
+        , _bullets = initBullets2                   -- ^ list of bullets locations
+        , _solid   = initSolid2                     -- ^ list of solid blocks
+        , _normal  = initNormal2                    -- ^ list of normal blocks
+        , _grass   = initGrass2                     -- ^ list of grass blocks
+        }
+      g1 = Game{
+          _dead    = False                         -- ^ game over flag
+        , _paused  = False                         -- ^ paused flag
+        , _player1 = V2 xm ym                     -- ^ coordinate of player 1
+        , _player2 = V2 (xm+10) (ym+10)              -- ^ coordinate of player 2 
+        , _score1  =  0                            -- ^ score of player 1
+        , _score2  =  0                            -- ^ score of player 2  
+        , _bu_cnt1 = 0
+        , _bu_cnt2 = 0
+        , _bullets = initBullets1                   -- ^ list of bullets locations
+        , _solid   = initSolid1                     -- ^ list of solid blocks
+        , _normal  = initNormal1                    -- ^ list of normal blocks
+        , _grass   = initGrass1                     -- ^ list of grass blocks
+        }
+  if mapid == 1 then g1 else g2
