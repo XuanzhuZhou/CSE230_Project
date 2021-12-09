@@ -52,7 +52,7 @@ main = do
   forkIO $ forever $ do
     writeBChan chan Tick
     threadDelay 100000 -- decides how fast your game moves
-  g <- initGame
+  g <- initGame2
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app g
@@ -135,10 +135,10 @@ cw = str "  "
 theMap :: AttrMap
 theMap = attrMap V.defAttr
   [ (bulletAttr, V.yellow `on` V.yellow)
-  , (normalAttr, V.brightMagenta `on` V.brightMagenta)
-  , (grassAttr, V.brightGreen `on` V.brightGreen)
+  , (normalAttr, V.cyan `on` V.cyan)
+  , (grassAttr, V.green `on` V.green)
   , (solidAttr, V.brightBlack `on` V.brightBlack)
-  , (player1Attr, V.cyan `on` V.cyan)
+  , (player1Attr, V.brightMagenta `on` V.brightMagenta)
   , (player2Attr, V.red `on` V.red)
   , (emptyAttr, V.white `on` V.white)
   , (gameOverAttr, fg V.red `V.withStyle` V.bold)
