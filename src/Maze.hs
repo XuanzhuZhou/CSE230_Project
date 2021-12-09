@@ -38,7 +38,7 @@ data Game = Game
   , _solid   :: [Coord]      -- ^ list of solid blocks
   , _normal  :: [Coord]      -- ^ list of normal blocks
   , _grass   :: [Coord]      -- ^ list of grass blocks
-  } deriving (Show)
+  } deriving (Show, Eq)
 
 type Coord = V2 Int
 

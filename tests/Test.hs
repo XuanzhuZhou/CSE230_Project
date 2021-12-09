@@ -1,38 +1,50 @@
 module Main where 
 
+import Test.Tasty
+import Prelude
 import System.Exit
 import Test.QuickCheck
+import Constants as C
+import Common
+import Maze as M
+import UI hiding(main)
 
-main :: IO ()
-main = do 
-  putStrLn "\nRunning my tests... "
-  quickCheck prop_isAllDigit
-  putStrLn "\nDone Testing"
-  exitWith ExitSuccess 
+main :: IO()
+main = runTests 
+  [  testMove
+   , testGetBullet
+   , testDestroyBlock
+   , testGameOverCondition
+  ]
 
--- test functions
-prop_isAllDigit :: Int -> Bool
-prop_isAllDigit val = val == val
+scoreTest :: (Show b, Eq b) => (a -> b, a, b, Int, String, Score) -> TestTree
+scoreTest (f, x, r, n, msg, sc) = scoreTest' sc (return . f, x, r, n, msg)
 
+testMove ::  Score -> TestTree
+testMove sc = testGroup "Player move around" [
+    scoreTest ((\_ -> M.moves 1 North C.testMoveBefore), (), C.testMoveBefore, 1, "player move north", sc)
+    , scoreTest ((\_ -> M.moves 1 South C.testMoveBefore), (), C.testMoveBefore, 1, "player move south", sc)
+    , scoreTest ((\_ -> M.moves 1 East C.testMoveBefore), (), C.testMoveAfterEast, 1, "player move east", sc)
+    , scoreTest ((\_ -> M.moves 1 West C.testMoveBefore), (), C.testMoveAfterWest, 1, "player move west", sc)
+    ]
 
+testGetBullet ::  Score -> TestTree
+testGetBullet sc = testGroup "Player get bullet" [
+    scoreTest ((\_ -> M.moves 1 North C.testGetBulletBefore), (), C.testGetBulletBefore, 1, "player get bullet north", sc)
+    , scoreTest ((\_ -> M.moves 1 South C.testGetBulletBefore), (), C.testGetBulletBefore, 1, "player get bullet south", sc)
+    , scoreTest ((\_ -> M.moves 1 East C.testGetBulletBefore), (), C.testGetBulletAfterEast, 1, "player get bullet east", sc)
+    , scoreTest ((\_ -> M.moves 1 West C.testGetBulletBefore), (), C.testGetBulletAfterWest, 1, "player get bullet west", sc)
+    ]
 
--------------------------- moves --------------------------
--- TestMoves ::  Game -> Bool
--- TestMoves g = do
---   let x = 5
---   let y = 6
---   (CorrectMove (SetPlayerPos 1 [x,y] ) 1 North [x, y+1]) && ( CorrectMove (SetPlayerPos 1 [x,y] ) 1 South [x, y-1] ) && ( CorrectMove (SetPlayerPos 1 [x,y] ) 1 East [x-1, y] ) && ( CorrectMove (SetPlayerPos 1 [x,y] ) 1 West [x+1, y] ) && ( CorrectMove (SetPlayerPos 2 [x,y] ) 2 North [x, y+1] ) && ( CorrectMove (SetPlayerPos 2 [x,y] ) 2 South [x, y-1] ) && ( CorrectMove (SetPlayerPos 2 [x,y] ) 2 East [x-1, y] ) && ( CorrectMove (SetPlayerPos 2 [x,y] ) 2 West [x+1, y])
---   --                           startPos        Answer
+testDestroyBlock ::  Score -> TestTree
+testDestroyBlock sc = testGroup "Player destroy normal blocks" [
+      scoreTest ((\_ -> M.p1_kill C.testDestroyNormalBlocksBefore), (), C.testDestroyNormalBlocksAfter, 1, "player destroy no normal blocks", sc)
+    , scoreTest ((\_ -> M.p1_kill C.testDestroyNormalBlocksNorthBefore), (), C.testDestroyNormalBlocksNorthAfter, 1, "player destroy north normal blocks", sc)
+    , scoreTest ((\_ -> M.p1_kill C.testDestroyNormalBlocksMoreBefore), (), C.testDestroyNormalBlocksMoreAfter, 1, "player destroy more normal blocks", sc)
+    ]
 
--- SetPlayerPos :: Game -> Int -> [Int] -> Game
--- SetPlayerPos g player pos = do
---   let x = head pos
---   let y = last pos
---   if player == 1 then g & player1 %~ (\V2 _ _ -> V2 x y) else g & player2 %~ (\V2 _ _ -> V2 x y)
-
--- CorrectMove :: Game -> Int -> Direction -> [Int] -> Bool 
--- CorrectMove g player dirc ans = do
---   let answer = (V2 (head ans) (last ans))
---   let test = if player == 1 then (moves 1 dirc g) ^. player1  else (moves 2 dirc g) ^. player2
---   test == answer
-
+testGameOverCondition ::  Score -> TestTree
+testGameOverCondition sc = testGroup "Game over condition" [
+      scoreTest ((\_ -> M.p1_kill C.testGameOverConditionBefore), (), C.testGameOverConditionAfterPlayer1, 1, "player1 wins", sc)
+    , scoreTest ((\_ -> M.p2_kill C.testGameOverConditionBefore), (), C.testGameOverConditionAfterPlayer2, 1, "player2 wins", sc)
+    ]

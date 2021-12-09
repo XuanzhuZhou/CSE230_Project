@@ -27,6 +27,22 @@ executable mazeFight
   default-language:    Haskell2010
   ghc-options:       -W -threaded
 
+Library
+  hs-source-dirs:      src
+  exposed-modules:     Maze
+                     , UI
+  default-language:    Haskell2010
+  build-depends:       base         >= 4.7 && < 5
+                     , brick
+                     , containers
+                     , extra
+                     , linear
+                     , lens
+                     , random
+                     , transformers
+                     , vty
+                     , mtl
+
 test-suite tests
   default-language: Haskell98
   type:              exitcode-stdio-1.0
@@ -36,3 +52,20 @@ test-suite tests
   build-depends:     base >=4.9
                     , process
                     , QuickCheck
+                    , brick
+                    , containers
+                    , extra
+                    , linear
+                    , lens
+                    , random
+                    , transformers
+                    , vty
+                    , mtl
+                    , mazeFight
+                    , filepath
+                    , directory
+                    , tasty
+                    , tasty-hunit
+                    , tasty-quickcheck
+  other-modules:    Constants
+                    , Common
