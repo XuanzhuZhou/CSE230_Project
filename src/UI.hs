@@ -99,7 +99,7 @@ drawStats1 g = hLimit 16
 drawStats2 :: Game -> Widget Name
 drawStats2 g = hLimit 16
   $ vBox [ C.hCenter $ str "\n   PLAYER 2 \nUse WASD to move\nUse C to kill\n\n"
-         , drawScore (g ^. score2) " Socre "
+         , drawScore (g ^. score2) " Score "
          , drawScore (g ^. bu_cnt2) " Bullet "
          , padTop (Pad 2) $ drawGameOver g
          , C.hCenter $ str "\n\n\n\n\n\n\nPRESS R\nTO SEE THE RULES\n\nPRESS B\nBACK TO GAME"
