@@ -11,7 +11,7 @@ Bullets can destroy normal blocks but can not pass through normal blocks or gras
 In our implementation, we plan to use different colors to represent different kinds of blocks.
 ## Playfield (Counter)
 i) Score counter, when players eat bullets, the score would increase 10 points for each bullet. When player shoot the rival, the score will increase 1000 points.
-ii) Bullet Counter, when players eat bullets, the bullet counter would increase 10 points for each bullet. When players shoot their bullets, the bullet counter would decrease 10 points after shooting each point. 
+ii) Bullet Counter, when players eat bullets, the bullet counter would increase 1 for each bullet. When players shoot their bullets, the bullet counter would decrease 1 after shooting each point. 
 
 ## Operations
 There are three kinds of operations for each player.    
