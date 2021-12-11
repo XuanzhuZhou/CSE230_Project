@@ -129,7 +129,7 @@ drawBoard g = if g ^. rules == 0 then drawGrid g
          , C.hCenter $ str "BLOCKS\n"
          , C.hCenter $ str "Solid blocks: can’t go through, can't be destroyed \n"
          , C.hCenter $ str "Normal block: can’t go through,  can  be destroyed \n"
-         , C.hCenter $ str "Normal block:  can  go through, can't be destroyed \n"
+         , C.hCenter $ str "Grass  block:  can  go through, can't be destroyed \n"
          , C.hCenter $ str "\nKILL\n"
          , C.hCenter $ str "Touch a bomb in the maze to pick it up\n"
          , C.hCenter $ str "Use a bomb to kill your rival or destroy normal blocks\n"

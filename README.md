@@ -1,9 +1,9 @@
 # CSE230_Project
 
 ## Team Members(Name, Email, Github_id)
-Xiuqi Chen, xic048@ucsd.edu, BrannyA
-Manqing Zheng, maz040@ucsd.edu, manqingZheng
-Xuanzhu Zhou, xuz004@ucsd.edu, XuanzhuZhou
+Xiuqi Chen, xic048@ucsd.edu, BrannyA    
+Manqing Zheng, maz040@ucsd.edu, manqingZheng    
+Xuanzhu Zhou, xuz004@ucsd.edu, XuanzhuZhou    
 
 ### Goals
 It is a fast paced multiplayer shooting game in the scene of a maze, developed in Haskell. Each participant could control their roles using a keyboard and interact with each other.
@@ -31,9 +31,10 @@ i) the other player is killed. A player will be killed instantly once he/she get
 ii) when bullets are running out and no player gets shoot, then the player who has higher bullet counter score wins.   
 
 ## Screenshot
-<img src="/screenshot/sample.png" width="500"> 
+<img src="/screenshot/Screenshot_Rules.png" width="500"> 
+<img src="/screenshot/Screenshot_Game.png" width="500"> 
 
-### Update on Nov.29
+### Milestone | Update on Nov.29
 
 #### 1 What is the architecture of your application (the key components)?
 We used several haskell libraries to implement the game, including control monad library, concurrent library, brick library and System Random library.      
